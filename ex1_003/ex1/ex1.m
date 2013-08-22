@@ -99,8 +99,8 @@ J_vals = zeros(length(theta0_vals), length(theta1_vals));
 % Fill out J_vals
 for i = 1:length(theta0_vals)
     for j = 1:length(theta1_vals)
-	  t = [theta0_vals(i); theta1_vals(j)];
-	  J_vals(i,j) = computeCost(X, y, t);
+	t = [theta0_vals(i); theta1_vals(j)];
+	J_vals(i,j) = computeCost(X, y, t);
     end
 end
 
@@ -115,8 +115,9 @@ xlabel('\theta_0'); ylabel('\theta_1');
 
 % Contour plot
 figure;
-% Plot J_vals as 15 contours spaced logarithmically between 0.01 and 100
-contour(theta0_vals, theta1_vals, J_vals, logspace(-2, 3, 20))
+% Plot J_vals as 40 contours spaced logarithmically between 0.01 and 100
+contour(theta0_vals, theta1_vals, J_vals, logspace(-2, 3, 40))
+contour(theta0_vals, theta1_vals, J_vals, linspace(0, 800, 40))
 xlabel('\theta_0'); ylabel('\theta_1');
 hold on;
 plot(theta(1), theta(2), 'rx', 'MarkerSize', 10, 'LineWidth', 2);

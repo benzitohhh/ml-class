@@ -11,27 +11,22 @@ for iter = 1:num_iters
 
     % ====================== YOUR CODE HERE ======================
     % Instructions: Perform a single gradient step on the parameter vector
-    %               theta. 
+    %               theta.
     %
     % Hint: While debugging, it can be useful to print out the values
     %       of the cost function (computeCostMulti) and gradient here.
     %
+    h = X * theta;           % hypothesis
+    delta = (h - y)' * X;    % delta per feature (x1, x2, etc..)
+    delta = 1 / m * delta;   %
+    delta = delta';          %
 
-
-
-
-
-
-
-
-
-
-
+    theta = theta - (alpha * delta);
     % ============================================================
 
-    % Save the cost J in every iteration    
-    J_history(iter) = computeCostMulti(X, y, theta);
-
+    % Save the cost J in every iteration
+    cost = computeCostMulti(X, y, theta);
+    J_history(iter) = cost
 end
 
 end
