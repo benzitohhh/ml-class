@@ -1,14 +1,14 @@
 function [J, grad] = lrCostFunction(theta, X, y, lambda)
-%LRCOSTFUNCTION Compute cost and gradient for logistic regression with 
+%LRCOSTFUNCTION Compute cost and gradient for logistic regression with
 %regularization
 %   J = LRCOSTFUNCTION(theta, X, y, lambda) computes the cost of using
 %   theta as the parameter for regularized logistic regression and the
-%   gradient of the cost w.r.t. to the parameters. 
+%   gradient of the cost w.r.t. to the parameters.
 
 % Initialize some useful values
 m = length(y); % number of training examples
 
-% You need to return the following variables correctly 
+% You need to return the following variables correctly
 J = 0;
 grad = zeros(size(theta));
 
@@ -25,28 +25,34 @@ grad = zeros(size(theta));
 %
 %       Each row of the resulting matrix will contain the value of the
 %       prediction for that example. You can make use of this to vectorize
-%       the cost function and gradient computations. 
+%       the cost function and gradient computations.
 %
-% Hint: When computing the gradient of the regularized cost function, 
+% Hint: When computing the gradient of the regularized cost function,
 %       there're many possible vectorized solutions, but one solution
 %       looks like:
 %           grad = (unregularized gradient for logistic regression)
-%           temp = theta; 
-%           temp(1) = 0;   % because we don't add anything for j = 0  
+%           temp = theta;
+%           temp(1) = 0;   % because we don't add anything for j = 0
 %           grad = grad + YOUR_CODE_HERE (using the temp variable)
 %
 
+h = X * theta; % predictions
+h = sigmoid(h); % apply sigmoid
+costY1 = y .* -log(h);
+costY0 = (1 - y) .* -log(1 - h);
+cost = costY0 + costY1;
+cost = 1 / m * sum(cost);
 
+reg = sum(theta(2:end) .^ 2);    % exclude theta(1) from regularization
+reg = 1 / (2*m) * lambda * reg;
 
+J = cost + reg;
 
-
-
-
-
-
+grad = (h - y)' * X;
+grad = 1 / m * grad;
+grad = grad';
+grad(2:end) = grad(2:end) .+ (1/m * lambda * theta(2:end));
 
 % =============================================================
-
-grad = grad(:);
 
 end

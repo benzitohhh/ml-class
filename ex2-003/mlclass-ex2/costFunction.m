@@ -21,7 +21,7 @@ grad = zeros(size(theta));
 %
 
 h = X * theta; % predictions
-h = sigmoid(h) % apply sigmoid
+h = sigmoid(h); % apply sigmoid
 costY1 = y .* -log(h);
 costY0 = (1 - y) .* -log(1 - h);
 cost = costY0 + costY1;
