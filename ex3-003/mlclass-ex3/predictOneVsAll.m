@@ -29,10 +29,10 @@ X = [ones(m, 1) X];
 %       are in rows, then, you can use max(A, [], 2) to obtain the max
 %       for each row.
 %
-
+dbstop;
 p = X * all_theta';      % predictions
 p = sigmoid(p);          % apply sigmoid
-p = p >= 0.5;            % quantize to 0 or 1
+%p = p >= 0.5;            % quantize to 0 or 1
 [m, p] = max(p, [], 2);  % row-wise max (m is values, p is indexes)
 
 % =========================================================================
