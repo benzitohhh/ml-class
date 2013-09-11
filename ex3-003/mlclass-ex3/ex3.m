@@ -66,6 +66,3 @@ pause;
 pred = predictOneVsAll(all_theta, X);
 
 fprintf('\nTraining Set Accuracy: %f\n', mean(double(pred == y)) * 100);
-
-%% BEN: 89% accuracy with max 50 iterations
-%% BEN: 91% accuracy with max 400 iterations
