@@ -91,25 +91,37 @@ J = cost + reg;                            % 1 x 1
 
 %X;       % 401 x 5000
 %y;       % 10 x 5000
-X = X';   % 5000 x 401
-y = y';   % 5000 x 10
+%% TODO: remove: X = X';   % 5000 x 401
+%% TODO: remove: y = y';   % 5000 x 10
 %Theta1   % 25 x 401
 %Theta2   % 10 x 26
 
+%% initialise accumulators
+%% i.e. we will use Theta1_grad and Theta2_grad for this.
+
 for t = 1:m
-    a1 = X(t,:)';     % 401 x 1
+    % calculate activations a2, a3 (i.e. forward propogation)
+    yt = y(:, t);     % 10 x 1
+    a1 = X(:, t);     % 401 x 1
     z2 = Theta1 * a1; % 25 x 1
     a2 = sigmoid(z2);
-
     a2 = [1; a2];     % 26 x 1
     z3 = Theta2 * a2; % 10 x 1
     a3 = sigmoid(z3);
+
+    % back propogation
+    %% 1. compute d3 (using y)
+    d3 = a3 - yt;     % 10 x 1
+    %% 2. compute d2 (using Theta2, d3 and sigmoidGrad of z2)
+    d2 = Theta2' * d3 .* sigmoidGradient([1; z2]);   % 26 x 1
+    %% 3. update accumulators:
+    Theta2_grad = Theta2_grad + (d3 * a2');             % 10 x 26
+    Theta1_grad = Theta1_grad + ( d2(2:end, :) * a1' ); % 25 x 401
 endfor
 
-## grad = (h - y)' * X;
-## grad = 1 / m * grad;
-## grad = grad';
-
+%% divide accumulators by m
+Theta1_grad = Theta1_grad / m;
+Theta2_grad = Theta2_grad / m;
 
 
 %
