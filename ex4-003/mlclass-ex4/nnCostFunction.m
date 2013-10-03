@@ -39,7 +39,6 @@ Theta2_grad = zeros(size(Theta2));
 %         cost function computation is correct by verifying the cost
 %         computed in ex4.m
 %
-
 X = X';               %% 400 x 5000
 X = [ones(1, m); X];  %% 401 x 5000
 z2 = Theta1 * X;
@@ -49,23 +48,30 @@ a2 = [ones(1, m); a2];%% 26 x 5000
 z3 = Theta2 * a2;     %% 10 x 5000
 a3 = sigmoid(z3);      %%
 
+% Currently, y has a single val per example (int labels between 0 and 10 inclusive).
+% i.e. example 1 might be '3'
+% i.e. example 2 might be '4'
+% We need to transform y to a matrix, with a K-dimensional vector per example.
+% i.e. example 1 might become [0 0 1 0 0 0 0 0 0 0], denoting it is in class 3
+% i.e. example 2 might become [0 0 0 1 0 0 0 0 0 0], denoting it is in class 4
+% y: 5000 x 1
 temp = [];
 for i = 1:num_labels
     temp = [temp, y==i];
-endfor
+endfor                %% 5000 x 10
 y = temp';            %% 10 x 5000
 
-costY1 = y .* -log(a3);
-costY0 = (1 - y) .* -log(1 - a3);
-cost = costY0 + costY1;
-cost = 1 / m * sum(sum(cost));
+costY1 = y .* -log(a3);                    % 10 x 5000
+costY0 = (1 - y) .* -log(1 - a3);          % 10 x 5000
+cost = costY0 + costY1;                    % 10 x 5000
+cost = 1 / m * sum(sum(cost));             % 1 x 1
 
 reg1 = sum(sum(Theta1(:, 2:end) .^ 2));    % exclude theta(1) from regularization
 reg2 = sum(sum(Theta2(:, 2:end) .^ 2));    % exclude theta(1) from regularization
 reg = reg1 + reg2;
-reg = 1 / (2*m) * lambda * reg;
+reg = 1 / (2*m) * lambda * reg;            % 1 x 1
 
-J = cost + reg;
+J = cost + reg;                            % 1 x 1
 
 
 % Part 2: Implement the backpropagation algorithm to compute the gradients
@@ -83,12 +89,12 @@ J = cost + reg;
 %               over the training examples if you are implementing it for the
 %               first time.
 
-%X 401 x 5000
-%y 10 x 5000
-X = X'; %5000 x 401
-y = y'; %5000 x 10
-%Theta1 25 x 401
-%Theta2 10 x 26
+%X;       % 401 x 5000
+%y;       % 10 x 5000
+X = X';   % 5000 x 401
+y = y';   % 5000 x 10
+%Theta1   % 25 x 401
+%Theta2   % 10 x 26
 
 for t = 1:m
     a1 = X(t,:)';     % 401 x 1
