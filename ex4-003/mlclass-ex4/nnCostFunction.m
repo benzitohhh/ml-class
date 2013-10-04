@@ -91,13 +91,10 @@ J = cost + reg;                            % 1 x 1
 
 %X;       % 401 x 5000
 %y;       % 10 x 5000
-%% TODO: remove: X = X';   % 5000 x 401
-%% TODO: remove: y = y';   % 5000 x 10
 %Theta1   % 25 x 401
 %Theta2   % 10 x 26
 
-%% initialise accumulators
-%% i.e. we will use Theta1_grad and Theta2_grad for this.
+%% we will use Theta1_grad and Theta2_grad for as the accumulators
 
 for t = 1:m
     % calculate activations a2, a3 (i.e. forward propogation)
@@ -110,13 +107,10 @@ for t = 1:m
     a3 = sigmoid(z3);
 
     % back propogation
-    %% 1. compute d3 (using y)
-    d3 = a3 - yt;     % 10 x 1
-    %% 2. compute d2 (using Theta2, d3 and sigmoidGrad of z2)
-    d2 = Theta2' * d3 .* sigmoidGradient([1; z2]);   % 26 x 1
-    %% 3. update accumulators:
-    Theta2_grad = Theta2_grad + (d3 * a2');             % 10 x 26
-    Theta1_grad = Theta1_grad + ( d2(2:end, :) * a1' ); % 25 x 401
+    d3 = a3 - yt;                                     % 10 x 1
+    d2 = Theta2' * d3 .* sigmoidGradient([1; z2]);    % 26 x 1
+    Theta2_grad = Theta2_grad + d3 * a2';             % 10 x 26
+    Theta1_grad = Theta1_grad + d2(2:end) * a1';      % 25 x 401
 endfor
 
 %% divide accumulators by m
@@ -133,25 +127,9 @@ Theta2_grad = Theta2_grad / m;
 %               and Theta2_grad from Part 2.
 %
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+%% add regularization (but not to bias column)
+Theta1_grad = [Theta1_grad(:, 1), Theta1_grad(:, 2:end) + 1 / m * lambda * Theta1(:, 2:end)];
+Theta2_grad = [Theta2_grad(:, 1), Theta2_grad(:, 2:end) + 1 / m * lambda * Theta2(:, 2:end)];
 
 % -------------------------------------------------------------
 
