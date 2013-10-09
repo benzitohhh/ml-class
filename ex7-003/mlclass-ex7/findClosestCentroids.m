@@ -8,9 +8,6 @@ function idx = findClosestCentroids(X, centroids)
 % Set K
 K = size(centroids, 1);
 
-% You need to return the following variables correctly.
-idx = zeros(size(X,1), 1);
-
 % ====================== YOUR CODE HERE ======================
 % Instructions: Go over every example, find its closest centroid, and store
 %               the index inside idx at the appropriate location.
@@ -20,23 +17,46 @@ idx = zeros(size(X,1), 1);
 %
 % Note: You can use a for-loop over the examples to compute this.
 %
+
+% ===================== NAIVE IMPLEMENTATION ===============
 m = size(X, 1);
-for i = 1:m
-    c = -1;
-    min_sqdist = intmax;
-    for j = 1:K
-        sqdist = X(i, :) - centroids(j, :);  % 1 x d
-        sqdist = sqdist .* sqdist;
-        sqdist = sum(sqdist, 2);               % 1 x 1
-        if (sqdist <= min_sqdist)
-           min_sqdist = sqdist;
-           c = j;
-        endif
-    end
-    idx(i) = c;
-end
+## idx = zeros(size(X,1), 1);
+## for i = 1:m
+##     dists = sum((centroids .- X(i, :)), 2);
+##     [dummy, idx(i)] = min(dists);
+## end
 
 
+% ===================== MORE EFFICIENT IMPLEMENTATION ======
+## The core of this problem is to compute a distance matrix D of size m x 3
+## that contains the pairwise distances between all data points in X and
+## all data points in C. The Euclidean distance between the i-th vector x_i
+## in X and the j-th vector c_j in C can be rewritten as:
+
+## |x_i-c_j|^2 = |x_i|^2 - 2<x_i, c_j> + |c_j|^2
+
+## where <,> refers to inner product. The right-hand side of this equation
+## can be easily vectorized, because the inner product of all pairs is just
+## X * C' which is BLAS3 operation. This way of computing the distance
+## matrix is known as dist2 function in the book Pattern Recognition and
+## Machine Learning by Christopher Bishop. I copy the function below with a
+## little modification.
+
+tempx = full(sum(X.^2, 2));             % m x 1
+tempc = full(sum(centroids.^2, 2).');   % 1 x k
+D = -2*(X * centroids.');               % m x k
+D = bsxfun(@plus, D, tempx);
+D = bsxfun(@plus, D, tempc);
+
+## The full here is used in case X or C is a sparse matrix.
+
+## Note: The distance matrix D computed this way might have tiny negative
+## entries due to numerical rounding error. To guard against this case, use
+## D = max(D, 0);
+
+## Now, the indices of the closest vector in C can be retrieved from D:
+
+[~, idx] = min(D, [], 2);
 % =============================================================
 
 end
