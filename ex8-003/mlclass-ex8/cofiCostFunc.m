@@ -45,13 +45,36 @@ Theta_grad = zeros(size(Theta));
 %Theta: u x n
 %X:     m x n
 
+% COST
 J = (Theta * X')';  % m x u
 J = J - Y;
 J = J .^ 2;
 J = J .* R;
-J = 0.5 * sum(sum(J));    % 1 x 1
+J = 0.5 * sum(sum(J));       % 1 x 1
 
 
+% X_grad
+for i = 1:num_movies
+    idx = find(R(i, :) == 1);    %% 1  x u'   indices of users that have rated movie i
+    Theta_temp = Theta(idx, :);  %% u' x n    feature vectors for users that have rated movie i
+    Y_temp = Y(i, idx);          %% 1  x u'   ratings for movie i from users that have rated it
+    g = X(i, :) * Theta_temp';   %% 1  x u'
+    g = g - Y_temp;
+    g = g * Theta_temp;          %% 1  x n
+    X_grad(i, :) = g;
+end
+
+% Theta_grad
+for j = 1:num_users
+    idx = find(R(:, j) == 1);    %% m' x 1   indices of movies that have been rated by user j
+    X_temp = X(idx, :);          %% m' x n   feature vectors for movies that have been rated by user j
+    Y_temp = Y(idx, j);          %% m' x 1   ratings for movies that have been rated by user j
+    g = X_temp * Theta(j, :)';   %% m' x 1
+    g = g - Y_temp;
+    g = g';                      %% 1  x m'
+    g = g * X_temp;              %% 1  x n
+    Theta_grad(j, :) = g;
+end
 
 
 
