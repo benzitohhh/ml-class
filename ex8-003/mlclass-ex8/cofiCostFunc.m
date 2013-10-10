@@ -51,7 +51,9 @@ J = J - Y;
 J = J .^ 2;
 J = J .* R;
 J = 0.5 * sum(sum(J));       % 1 x 1
-
+reg_theta = 0.5 * lambda * sum(sum(Theta .^ 2));
+reg_x = 0.5 * lambda * sum(sum(X .^ 2));
+J = J + reg_theta + reg_x;
 
 % X_grad
 for i = 1:num_movies
@@ -61,6 +63,7 @@ for i = 1:num_movies
     g = X(i, :) * Theta_temp';   %% 1  x u'
     g = g - Y_temp;
     g = g * Theta_temp;          %% 1  x n
+    g = g + lambda * X(i, :);    %%           regularization
     X_grad(i, :) = g;
 end
 
@@ -73,6 +76,7 @@ for j = 1:num_users
     g = g - Y_temp;
     g = g';                      %% 1  x m'
     g = g * X_temp;              %% 1  x n
+    g = g + lambda * Theta(j, :);%%          regularization
     Theta_grad(j, :) = g;
 end
 
